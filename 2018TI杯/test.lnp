@@ -1,0 +1,7 @@
+"main.obj",
+"LCD_ALI.obj",
+"FFT.obj",
+"HD7279.obj",
+"STC_HW.obj" 
+TO "test" 
+RAMSIZE(256) 
