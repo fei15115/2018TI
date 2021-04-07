@@ -20,10 +20,10 @@
 #include   "math.h"
 #include   "Photo.h"
 u8 AD7323(u8 CMD);
-      sbit SCK  = P7^7 ;
-      sbit MOSI = P7^5 ;
-			sbit MISO = P7^6 ;
-      sbit ADCS = P6^3;// //T1
+      sbit SCK  = P4^3 ;
+      sbit MOSI = P4^0 ;
+	  sbit MISO = P4^1 ;
+      sbit ADCS = P5^1;// //T1
 void   InterFace(void) ;
 extern int xdata Fft_Real[1024];
 extern int xdata Fft_Image[1024];               // fftµÄÐé²¿
