@@ -1,10 +1,10 @@
-C51 COMPILER V9.54   MAIN                                                                  04/07/2021 23:27:20 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  04/11/2021 15:34:12 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
 OBJECT MODULE PLACED IN main.OBJ
-COMPILER INVOKED BY: F:\keil\C51\BIN\C51.EXE main.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\Ó¦ÓÃ) DEBUG OBJECTEXTEND TAB
-                    -S(2)
+COMPILER INVOKED BY: D:\keil5\C51\BIN\C51.EXE main.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\Ó¦ÓÃ) DEBUG OBJECTEXTEND TA
+                    -BS(2)
 
 line level    source
 
@@ -13,459 +13,383 @@ line level    source
    3          // µÚÒ»´Î±à³ÌÊ±¼ä:2018Äê07ÔÂ20ÈÕ
    4          //-----------------------------------------------
    5          // ÎÄ¼þÃû£º  MAIN.C
-   6          // ±àÐ´ÈË£º  SivaYao 
-   7          // ±àÐ´Ê±¼ä£º2018/07/20
-   8          // Ä¿±êÆ÷¼þ: STC8A8K
-   9          // ±àÒë¹¤¾ß: Keil uV3
+   6          // ±àÐ´ÈË£º  Han(copy from SivaYao) 
+   7          // ±àÐ´Ê±¼ä£º2021/04/09
+   8          // Ä¿±êÆ÷¼þ: STC8H
+   9          // ±àÒë¹¤¾ß: Keil uV5
   10          //-----------------------------------------------
   11          // ³ÌÐòËµÃ÷:
-  12          // 2018ÄêAÌâ:µçÁ÷ÐÅºÅ¼ì²â×°ÖÃ
+  12          // ¸Ã³ÌÐò»ùÓÚFFTÒÔ¼°ÕýÏÒ²¨¼ì²âÂß¼­£»ÊµÏÖ¿ÉÒÔ¼ì²â²åÔÚµçÂ·°åÉÏµÄµçÆ÷µÄ×÷ÓÃ¡£
   13          //-----------------------------------------------
-  14          
-  15          #include   "STC8A8K.h"   //Ð¾Æ¬STC8A8KÄÚ²¿¼Ä´æÆ÷ËµÃ÷Í·ÎÄ¼þ
-  16          #include   "HD7279.h"    //HD7279°´¼üÏÔÊ¾Çý¶¯¿â Í·ÎÄ¼þ
-  17          #include   "STC_HW.H"   //Ð¾Æ¬ Æ¬ÉÏÓ²¼þÇý¶¯ Í·ÎÄ¼þ
-  18          #include   "FFT.H"       //FFT¼ÆËã¿â Í·ÎÄ¼þ
-  19          #include   "LCD_ALI.h"
-  20          #include   "math.h"
-  21          #include   "Photo.h"
+  14          #include   "STC8A8K.h"   //Ð¾Æ¬STC8A8KÄÚ²¿¼Ä´æÆ÷ËµÃ÷Í·ÎÄ¼þ
+  15          #include   "HD7279.h"    //HD7279°´¼üÏÔÊ¾Çý¶¯¿â Í·ÎÄ¼þ
+  16          #include   "STC_HW.H"   //Ð¾Æ¬ Æ¬ÉÏÓ²¼þÇý¶¯ Í·ÎÄ¼þ
+*** WARNING C317 IN LINE 32 OF .\Ó¦ÓÃ\STC_HW.H: attempt to redefine macro 'SYSTEM_OSC'
+  17          #include   "FFT.H"       //FFT¼ÆËã¿â Í·ÎÄ¼þ
+  18          #include   "LCD_ALI.h"
+  19          #include   "math.h"
+  20          #include   "Photo.h"
+  21          //7323AD¹Ü½Å¶¨Òå
   22          u8 AD7323(u8 CMD);
-  23                sbit SCK  = P7^7 ;
-  24                sbit MOSI = P7^5 ;
-  25                sbit MISO = P7^6 ;
-  26                sbit ADCS = P6^3;// //T1
-  27          void   InterFace(void) ;
-  28          extern int xdata Fft_Real[1024];
-  29          extern int xdata Fft_Image[1024];               // fftµÄÐé²¿
-  30          extern code unsigned int LIST_TAB[1024];
-  31          //unsigned int IRms[1024];
-  32          
-  33                sbit OUT0 = P6^2;
-  34                 u8  Mode = 0 ;//ÈýÖÖ²âÁ¿Ä£Ê½,1--Ö±½Ó²âÁ¿,2--FFTµÍÆµ²âÁ¿,2--FFT¸ßÆµ²âÁ¿
-  35                 bit KeyFlag,T0Flag,MesOver,OneSec,S1SendOver;
-  36                 u8  KeyNum,S1Num,DisNum; 
-  37                 u16 T0Count,T_Acc,F_Count,F_Acc;
-  38                 u16 DataMax,NumMax;
-  39                 u16 DataMax1;
-  40                 u8  S1Send[20];
-  41                 u16 XBF[20],XBV[20],XBNum; //Ð³²¨ÆµÂÊ,Ð³²¨·ù¶È,Ð³²¨¼ÆÊý
-  42                 int  ADRes=0,ADOld;    //AD7323²ÉÑù½á¹û
-  43                 bit  TongDao = 1 ;
-  44            long int  AD_Acc,V_Acc,VPP,VRMS,FRMS,ADMul;    
-  45          extern u16 FColor,BColor;
-  46          void GETSIN( void )
-  47          {
-  48   1        int i;
-  49   1        for(i=0;i<1024;i++)
-  50   1        {
-  51   2          Fft_Real[LIST_TAB[i]] = (int)(1024*sin(3.1415926*2*i*50.1/512));
-  52   2          Fft_Image[LIST_TAB[i]] = 0;
-  53   2        }
-  54   1      }
-C51 COMPILER V9.54   MAIN                                                                  04/07/2021 23:27:20 PAGE 2   
+  23          sbit SCK  = P4^3 ;
+  24          sbit MOSI = P4^0 ;
+  25          sbit MISO = P4^1 ;
+  26          sbit ADCS = P5^1;// //T1
+  27          sbit OUT0 = P6^2;//ÓÃÀ´¼ì²â²âÁ¿ÖÜÆÚ
+  28          
+  29          void   InterFace(void) ;
+  30          extern int xdata Fft_Real[1024];
+  31          extern int xdata Fft_Image[1024];               // fftµÄÐé²¿
+  32          extern code unsigned int LIST_TAB[1024];
+  33          //unsigned int IRms[1024];
+  34          
+  35          //±äÁ¿¶¨Òå
+  36          u8  Mode = 0 ;//ÈýÖÖ²âÁ¿Ä£Ê½,1--Ö±½Ó²âÁ¿,2--FFTµÍÆµ²âÁ¿,2--FFT¸ßÆµ²âÁ¿
+  37          bit KeyFlag,T0Flag,MesOver,OneSec,S1SendOver;
+  38          u8  KeyNum,S1Num,DisNum; 
+  39          u16 T0Count,T_Acc,F_Count,F_Acc;
+  40          u16 DataMax,NumMax;
+  41          u16 DataMax1;
+  42          u8  S1Send[20];
+  43          u16 XBF[20],XBV[20],XBNum; //Ð³²¨ÆµÂÊ,Ð³²¨·ù¶È,Ð³²¨¼ÆÊý
+  44          int  ADRes=0,ADOld;    //AD7323²ÉÑù½á¹û
+  45          bit  TongDao = 1 ;
+  46          long int AD_Acc,V_Acc,VPP,VRMS,FRMS,ADMul;     
+  47          extern u16 FColor,BColor;
+  48          u8 count=0;
+  49          u8 find_flag = 0;
+  50          
+  51          void Delay1ms()   //@33.000MHz
+  52          {
+  53   1        unsigned char i, j;
+C51 COMPILER V9.54   MAIN                                                                  04/11/2021 15:34:12 PAGE 2   
 
-  55          
-  56          void GETSQR( void )
-  57          {
-  58   1        int i;
-  59   1        for(i=0;i<1024;i++)
-  60   1        {
-  61   2          if(i/256%2)
-  62   2            Fft_Real[LIST_TAB[i]]=(int)(-512);
-  63   2            //Fft_Real[LIST_TAB[i]]=0;    
-  64   2          else
-  65   2            Fft_Real[LIST_TAB[i]]=(int)(512);
-  66   2        }
-  67   1      }
-  68          
-  69          void SANJIAO( void )
-  70          {
-  71   1        int i;
-  72   1        for(i=0;i<1024;i++)
-  73   1        {
-  74   2          if(i<512)
-  75   2            Fft_Real[LIST_TAB[i]]=(int)(-512+i*2);  
-  76   2          else
-  77   2            Fft_Real[LIST_TAB[i]]=(int)(1536-(i*2));
-  78   2        }
-  79   1      }
-  80          
-  81            u16 X  ,Y  ;
-  82          void main()
-  83          {
-  84   1        long int VPP1,vrms1;
-  85   1        int i;
-  86   1      //0---·ÂÕæ²âÊÔ³ÌÐò,ÏÖÔÚ²»ÓÃ
-  87   1        GETSIN();
-  88   1      //  GETSQR();
-  89   1      //  SANJIAO();
-  90   1        FFT();
-  91   1        for ( i=0 ; i<512 ; i++ ) {
-  92   2          Fft_Real[i] = sqrt((long int)Fft_Real[i]*Fft_Real[i]+(long int)Fft_Image[i]*Fft_Image[i]);
-  93   2         }
-  94   1      //1---Ó²¼þ³õÊ¼»¯³ÌÐò,°ÑÆ¬ÉÏÓ²¼þ³õÊ¼»¯(¶Ë¿Ú,¶¨Ê±Æ÷,SPI,´®¿Ú,ÖÐ¶ÏµÈ)
-  95   1        SystemInit();   
-  96   1      //2---HD7279°´¼üÏÔÊ¾µÄ³õÊ¼»¯ºÍ²âÊÔÏÔÊ¾(ÏÔÊ¾01234567)
-  97   1        SEND7279_CMD(0xA4) ;
-  98   1        for (i=0;i<8;i++) {
-  99   2          SEND7279_CMD_DATA(0x80+i , i) ;   }
- 100   1      //3---Òº¾§Ä£¿é³õÊ¼»¯¼°³õÊ¼½çÃæÏÔÊ¾
- 101   1        LCD_Init();        //Òº¾§Ä£¿é³õÊ¼»¯º¯Êý
- 102   1        LCD_Clear(0xFFFF); //Òº¾§ÇåÆÁ
- 103   1        InterFace( ) ;     //³õÊ¼½çÃæÏÔÊ¾
- 104   1      //4---AD7321³õÊ¼»¯ÉèÖÃ
- 105   1      /*  SPI_Conf  (  ) ;   //4.1--SPIÅäÖÃ
- 106   1        ADCS  = 0 ;        //4.2--ÅäÖÃAD7323¹¤×÷Ä£Ê½
- 107   1        SPI_Send (0xA0) ;
- 108   1        SPI_Send (0x00) ;  //-----ÉèÖÃ4¸öÍ¨µÀ¶¼ÊÇÕý¸º10·üÁ¿³Ì
- 109   1        ADCS  = 1 ;
- 110   1        ADCS  = 0 ;        //4.3--Éè¶¨Æô¶¯Í¨µÀ0µÄAD±ä»»
- 111   1        SPI_Send (0x84) ;  //CodingÉèÖÃÎ» -10V---0
- 112   1        SPI_Send (0x10) ;  //               0V---4096
- 113   1        ADCS  = 1 ;        //              10V---8191  */
- 114   1      //  AD7323(0xA000);
- 115   1      //  AD7323(0x8430);
- 116   1      //5---Ö÷³ÌÐòWhile(1)Íê³ÉÁ½Ïî¹¤×÷.
-C51 COMPILER V9.54   MAIN                                                                  04/07/2021 23:27:20 PAGE 3   
+  54   1      
+  55   1        i = 33;
+  56   1        j = 22;
+  57   1        do
+  58   1        {
+  59   2          while (--j);
+  60   2        } while (--i);
+  61   1      }
+  62          
+  63          
+  64          void GETSIN( void )
+  65          {
+  66   1        int i;
+  67   1        for(i=0;i<1024;i++)
+  68   1        {
+  69   2          Fft_Real[LIST_TAB[i]] = (int)(1024*sin(3.1415926*2*i*50.1/512));
+  70   2          Fft_Image[LIST_TAB[i]] = 0;
+  71   2        }
+  72   1      }
+  73          
+  74          void GETSQR( void )
+  75          {
+  76   1        int i;
+  77   1        for(i=0;i<1024;i++)
+  78   1        {
+  79   2          if(i/256%2)
+  80   2            Fft_Real[LIST_TAB[i]]=(int)(-512);
+  81   2            //Fft_Real[LIST_TAB[i]]=0;    
+  82   2          else
+  83   2            Fft_Real[LIST_TAB[i]]=(int)(512);
+  84   2        }
+  85   1      }
+  86          
+  87          void SANJIAO( void )
+  88          {
+  89   1        int i;
+  90   1        for(i=0;i<1024;i++)
+  91   1        {
+  92   2          if(i<512)
+  93   2            Fft_Real[LIST_TAB[i]]=(int)(-512+i*2);  
+  94   2          else
+  95   2            Fft_Real[LIST_TAB[i]]=(int)(1536-(i*2));
+  96   2        }
+  97   1      }
+  98          
+  99            u16 X  ,Y  ;
+ 100          void main()
+ 101          {
+ 102   1        long int VPP1,vrms1;
+ 103   1        int i;
+ 104   1      //0---·ÂÕæ²âÊÔ³ÌÐò,ÏÖÔÚ²»ÓÃ
+ 105   1        GETSIN();
+ 106   1      //  GETSQR();
+ 107   1      //  SANJIAO();
+ 108   1        FFT();
+ 109   1        for ( i=0 ; i<512 ; i++ ) {
+ 110   2          Fft_Real[i] = sqrt((long int)Fft_Real[i]*Fft_Real[i]+(long int)Fft_Image[i]*Fft_Image[i]);
+ 111   2         }
+ 112   1      //1---Ó²¼þ³õÊ¼»¯³ÌÐò,°ÑÆ¬ÉÏÓ²¼þ³õÊ¼»¯(¶Ë¿Ú,¶¨Ê±Æ÷,SPI,´®¿Ú,ÖÐ¶ÏµÈ)
+ 113   1        SystemInit();   
+ 114   1      //2---HD7279°´¼üÏÔÊ¾µÄ³õÊ¼»¯ºÍ²âÊÔÏÔÊ¾(ÏÔÊ¾01234567)
+ 115   1        SEND7279_CMD(0xA4) ;
+C51 COMPILER V9.54   MAIN                                                                  04/11/2021 15:34:12 PAGE 3   
 
- 117   1      //5.1--Èç¹ûÒ»´Î²âÊÔÍê³É(Mode1Íê³ÉÔ¼1Ãë²âÁ¿,Mode2ºÍMode3Íê³É1024µãµÄ²âÁ¿)
- 118   1      //-----ÄÇÃ´¸ù¾Ý¹¤×÷Ä£Ê½µÄ²»Í¬½øÐÐÏàÓ¦µÄ¼ÆËãºÍÏÔÊ¾
- 119   1      //-----Mode=1  ÕýÏÒ²¨ÆµÂÊºÍ·å·åÖµ²âÁ¿¼ÆËãÏÔÊ¾
- 120   1      //-----Mode=2  ÈÎÒâ²¨µÍÆµFFT¼ÆËãÏÔÊ¾(»ù²¨)
- 121   1      //-----Mode=3  ÈÎÒâ²¨¸ßÆµFFT¼ÆËãÏÔÊ¾(»ù²¨ºÍ¸ß´ÎÐ³²¨),»¹Ðè¸Ä½ø
- 122   1      //5.2--Èç¹ûÊÇÓÐÒ»´Î°´¼ü,Ôò¸ù¾Ý¼üÂëÉèÖÃ¹¤×÷Ä£Ê½,Ó²¼þÉèÖÃºÍ½çÃæÏÔÊ¾µÈ
- 123   1        while(1){
- 124   2          //1-----------------//Èç¹ûÒ»´Î²âÁ¿Íê³É
- 125   2          if ( MesOver ) {   
- 126   3            MesOver = 0 ;    //Çå³ý±êÖ¾Î»
- 127   3            //(1)Èç¹ûÊÇÖ±½Ó²âÁ¿Ä£Ê½(ÕýÏÒ²¨²âÁ¿)
- 128   3            if ( Mode == 1 )  {
- 129   4              
- 130   4              //ÓÐÐ§Öµ¼ÆËã¹«Ê½VRMS=sqrt(ÀÛ¼Ó(Ui)^2 / N);NÎª²âÁ¿µãÊý
- 131   4              //Ò»°ãN=4000(ÐèÒªÐÞÕý),ÏÖÔÚµÄ¼ÆËã½á¹û·Å´óÁË1000±¶(ÒÔ·üÎªµ¥Î»)
- 132   4              VPP  = sqrt(V_Acc/T_Acc*800+V_Acc%T_Acc*800/T_Acc)*707/512 ;  //(1.1)·å·åÖµ¼ÆËã
- 133   4              VRMS = sqrt(V_Acc/T_Acc*800+V_Acc%T_Acc*800/T_Acc)*250/512 ;  //(1.2)ÓÐÐ§Öµ¼ÆËã
- 134   4              //VPP  = sqrt(V_Acc/5)*707/512 ;  //(1.1)·å·åÖµ¼ÆËã
- 135   4              //VRMS = sqrt(V_Acc/5)*250/512 ;  //(1.2)ÓÐÐ§Öµ¼ÆËã
- 136   4              //ÆµÂÊ¼ÆËã²ÉÓÃ¶àÖÜÆÚÍ¬²½²âÁ¿µÄË¼Ïë¼ÆËã
- 137   4              FRMS = 480000*F_Acc/T_Acc ;       //(1.3)ÆµÂÊ¼ÆËã
- 138   4              if (FRMS >=100000) { FRMS = 99999 ;} //·ÀÖ¹ÏÔÊ¾Òç³ö     //1k
- 139   4              //(1.4)ÔÚÒº¾§ÆÁÉÏÏÔÊ¾ÆµÂÊÖµ
- 140   4              DisP_Photo  ( 64,80, 64+12-1,80+24-1,Dig1224[FRMS/10000],0);
- 141   4              DisP_Photo  ( 76,80, 76+12-1,80+24-1,Dig1224[FRMS%10000/1000],0);
- 142   4              DisP_Photo  ( 88,80, 88+12-1,80+24-1,Dig1224[FRMS%1000/100],0);
- 143   4              DisP_Photo  (100,80,100+12-1,80+24-1,Dig1224[10],0);
- 144   4              DisP_Photo  (112,80,112+12-1,80+24-1,Dig1224[FRMS%100/10],0);
- 145   4              //(1.5)ÔÚÒº¾§ÆÁÉÏÏÔÊ¾·å·åÖµ
- 146   4      //        if(TongDao==1)
- 147   4      //          vrms1=VRMS/10;
- 148   4      //        else
- 149   4                vrms1=VRMS;
- 150   4                VPP1=vrms1/6;
- 151   4              if(TongDao==1)
- 152   4              {
- 153   5              DisP_Photo  (238-50,80+40,238+12-1-50,80+64-1,Dig1224[VPP1%100000/10000],0);  
- 154   5              DisP_Photo  (238-50,80+40,238+12-1-50,80+64-1,Dig1224[VPP1%10000/1000],0);
- 155   5              DisP_Photo  (250-50,80+40,250+12-1-50,80+64-1,Dig1224[VPP1%1000/100],0);
- 156   5              DisP_Photo  (262-50,80+40,262+12-1-50,80+64-1,Dig1224[VPP1%100/10],0);
- 157   5              DisP_Photo  (274-50,80+40,274+12-1-50,80+64-1,Dig1224[10],0);
- 158   5              DisP_Photo  (286-50,80+40,286+12-1-50,80+64-1,Dig1224[VPP1%10],0);
- 159   5              }
- 160   4              else
- 161   4                {
- 162   5                  DisP_Photo  (238-50,80+40,238+12-1-50,80+64-1,Dig1224[VPP1%100000/10000],0);  
- 163   5                  DisP_Photo  (238-50,80+40,238+12-1-50,80+64-1,Dig1224[VPP1%10000/1000],0);
- 164   5                  DisP_Photo  (250-50,80+40,250+12-1-50,80+64-1,Dig1224[VPP1%1000/100],0);
- 165   5                  DisP_Photo  (262-50,80+40,262+12-1-50,80+64-1,Dig1224[VPP1%100/10],0);
- 166   5                  DisP_Photo  (274-50,80+40,274+12-1-50,80+64-1,Dig1224[VPP1%10],0);
- 167   5                  DisP_Photo  (286-50,80+40,286+12-1-50,80+64-1,Dig1224[10],0);
- 168   5                }
- 169   4              GUI_ShowStr (285,120,16,"mA",0);
- 170   4              //(1.6)ÔÚÒº¾§ÆÁÉÏÏÔÊ¾ÓÐÐ§Öµ
- 171   4                vrms1=(VPP1*1414/1000)/4;
- 172   4              DisP_Photo  (395,80,395+12-1,80+24-1,Dig1224[vrms1%10000/1000],0);
- 173   4              DisP_Photo  (407,80,407+12-1,80+24-1,Dig1224[10],0);
- 174   4              DisP_Photo  (419,80,419+12-1,80+24-1,Dig1224[vrms1%1000/100],0);
- 175   4              DisP_Photo  (431,80,431+12-1,80+24-1,Dig1224[vrms1%100/10],0);
- 176   4              DisP_Photo  (443,80,443+12-1,80+24-1,Dig1224[vrms1%10],0);
- 177   4              if (TongDao) {
- 178   5                  GUI_ShowChar(50,40,0x0000,0xffff,'1',16,0); }
-C51 COMPILER V9.54   MAIN                                                                  04/07/2021 23:27:20 PAGE 4   
+ 116   1        for (i=0;i<8;i++) 
+ 117   1        {
+ 118   2            SEND7279_CMD_DATA(0x80+i , 0);    
+ 119   2        }
+ 120   1        AD7323(0xA000);
+ 121   1        AD7323(0x8430);
+ 122   1        while(1){
+ 123   2          //1-----------------//Èç¹ûÒ»´Î²âÁ¿Íê³É
+ 124   2          if ( MesOver ) {   
+ 125   3            MesOver = 0 ;    //Çå³ý±êÖ¾Î»
+ 126   3            //(1)Èç¹ûÊÇÖ±½Ó²âÁ¿Ä£Ê½(ÕýÏÒ²¨²âÁ¿)
+ 127   3           //(3)Èç¹ûÊÇFFT¸ßÆµÄ£Ê½,²ÉÑùÆµÂÊ2.56KHz,½øÐÐ1024µãFFT±ä»»
+ 128   3           //×ª»»Íê³ÉºóÆµÂÊ¼ä¸ôµãÊÇ2.5Hz,É¨Ãè°ÑËùÓÐ·ùÖµ³¬¹ýãÐÖµµÄÆµÂÊµãºÍ·ùÖµÏÔÊ¾³öÀ´
+ 129   3              if ( Mode ==3 )   
+ 130   3             { //(3)Èç¹ûÊÇFFT¸ßÆµÄ£Ê½
+ 131   4              FFT(  );       //(3.1)²É¼¯½á¹û·ÅÔÚFft_RealÊý×éÖÐ,½øÐÐ1024µãFFT±ä»»
+ 132   4              //XBNum = 0 ;
+ 133   4              //(3.2)±ä»»Íê³Éºó,ÕûºÏ¸÷ÆµÂÊµãÊµ²¿ºÍÐé²¿,¼ÆËã·ùÖµ,·ùÖµÒ²·ÅÔÚFft_RealÊý×éÖÐ
+ 134   4              for ( i= 1 ; i<401 ; i++ ) 
+ 135   4              {
+ 136   5                 Fft_Real[i] = sqrt((long int)Fft_Real[i]*Fft_Real[i]+(long int)Fft_Image[i]*Fft_Image[i]);          
+ 137   5                    }
+ 138   4              if((u32)Fft_Real[20]/10*625/128 > 0x50)
+ 139   4              {
+ 140   5                SEND7279_CMD(0xA4);
+ 141   5                SEND7279_CMD_DATA(0x87 , 1);
+ 142   5                find_flag = 1;
+ 143   5              }else{
+ 144   5                for(i=23 ; i<400 ;i++ )
+ 145   5                {
+ 146   6                  if(Fft_Real[i]*625/128/24*1414/100 > 10)
+ 147   6                  {
+ 148   7                    SEND7279_CMD(0xA4);
+ 149   7                    SEND7279_CMD_DATA(0x87 , 2);
+ 150   7                    find_flag = 1;
+ 151   7                  }
+ 152   6                }
+ 153   5                if(find_flag == 0)
+ 154   5                {
+ 155   6                  SEND7279_CMD(0xA4);
+ 156   6                  SEND7279_CMD_DATA(0x87 , 3);
+ 157   6                }
+ 158   5              }
+ 159   4              for ( i=0 ; i<400 ;i++ ) {   //´®¿ÚÊý¾ÝÊä³ö³ÌÐò,µ÷ÊÔÓÃ
+ 160   5                  S1Send[0]= 0xaa ;
+ 161   5                S1Send[1]= 0xaa;
+ 162   5                S1Send[2]= i/256;
+ 163   5                S1Send[3]= i   ;
+ 164   5                S1Send[4]= (u32)Fft_Real[i]*625/1280>>8;
+ 165   5                S1Send[5]= (u32)Fft_Real[i]*625/1280;         
+ 166   5                S1Num = 0 ;SBUF = S1Send[0];
+ 167   5                S1SendOver = 0 ;          
+ 168   5                while ( S1SendOver == 0 ) {;}
+ 169   5                }
+ 170   4              //(3.3)ÏÔÊ¾×Ö·û´®
+ 171   4              // GUI_ShowStr (12,108,16,"fn(Hz)",0);
+ 172   4              // GUI_ShowStr (12,124,16,"IP(0.1mA)",0);
+ 173   4              // //(3.4)Éè¶¨³õÊ¼×ø±ê
+ 174   4              // X =60;Y =108;
+ 175   4                  //(3.5)É¨ÃèÕû¸öÊý×é,Êä³ö·ùÖµ³¬¹ýãÐÖµ(ÔÝÊ±È¡60)µÄÆµÂÊµãºÍ·ùÖµ                  
+ 176   4               }  //end of Mode==3
+ 177   3            }  //end of MesOver==1
+C51 COMPILER V9.54   MAIN                                                                  04/11/2021 15:34:12 PAGE 4   
 
- 179   4              else {
- 180   5                  GUI_ShowChar(50,40,0x0000,0xffff,'0',16,0); }
- 181   4              if ((TongDao==0)&&(VPP1<100))   {TongDao = 1 ;}
- 182   4              if ((TongDao==1)&&(VPP1>800))  {TongDao = 0 ;}
- 183   4              }  //end of Mode ==1 .Mode1¼ÆËãÏÔÊ¾Íê³É
- 184   3            //(2)Èç¹ûÊÇFFTµÍÆµÄ£Ê½,²ÉÑùÆµÂÊ512Hz,½øÐÐ1024µãFFT±ä»»
- 185   3            //×ª»»Íê³ÉºóÆµÂÊ¼ä¸ôµãÊÇ0.5Hz,Í¨¹ýÉ¨Ãè×î´ó·ùÖµµãÈ·¶¨»ù²¨ÆµÂÊºÍ»ù²¨·ùÖµ
- 186   3            if ( Mode ==2 )   { //(2)Èç¹ûÊÇFFTµÍÆµÄ£Ê½
- 187   4              FFT(  ); //(2.1)²É¼¯½á¹û·ÅÔÚFft_RealÊý×éÖÐ,½øÐÐ1024µãFFT±ä»»
- 188   4              //(2.2)±ä»»Íê³Éºó,ÕûºÏ¸÷ÆµÂÊµãÊµ²¿ºÍÐé²¿,¼ÆËã·ùÖµ,·ùÖµÒ²·ÅÔÚFft_RealÊý×éÖÐ
- 189   4              for ( i=0 ; i<401 ; i++ ) {
- 190   5                 Fft_Real[i] = sqrt((long int)Fft_Real[i]*Fft_Real[i]+(long int)Fft_Image[i]*Fft_Image[i]);
- 191   5                 }
- 192   4              //(2.3)É¨ÃèÊý×é,ÕÒµ½×î´ó·ùÖµ¼°ÆäÏÂ±ê(ÏÂ±ê*0.5¾ÍÊÇÆµÂÊ),¼ò»¯ÁË,¿ÉÄÜÒªÐÞÕý
- 193   4              DataMax = 0 ;NumMax = 0 ;
- 194   4              for ( i = 1; i <401 ; i++ ) {
- 195   5                if ( Fft_Real[i]> DataMax ) {
- 196   6                   NumMax = i ;DataMax = Fft_Real[i] ;}
- 197   5                 }
- 198   4              //ÕâÀï¼ò»¯ÁËÒªÐÞ¸Ä(×î´óÖµ¼ÆËã)
- 199   4              //(2.4)¼ÆËãÆµÂÊNumMax(·Å´ó10±¶)ºÍ·ùÖµDataMax(·Å´ó1000±¶)           
- 200   4              NumMax = NumMax*5 ; DataMax = (u32)DataMax*625/128;
- 201   4              //(2.5)ÏÔÊ¾ÆµÂÊ
- 202   4              DisP_Photo  (112,80,112+12-1,80+24-1,Dig1224[NumMax/1000],0);
- 203   4              DisP_Photo  (124,80,124+12-1,80+24-1,Dig1224[NumMax%1000/100],0);
- 204   4              DisP_Photo  (136,80,136+12-1,80+24-1,Dig1224[NumMax%100/10],0);
- 205   4              DisP_Photo  (148,80,148+12-1,80+24-1,Dig1224[10],0);
- 206   4              DisP_Photo  (160,80,160+12-1,80+24-1,Dig1224[NumMax%10],0);
- 207   4              //(2.6)ÏÔÊ¾·ùÖµ
- 208   4                 DataMax1=(long int)DataMax/24*1414/1000;
- 209   4              DisP_Photo  (296,80,296+12-1,80+24-1,Dig1224[DataMax1/1000],0);
- 210   4              DisP_Photo  (308,80,308+12-1,80+24-1,Dig1224[10],0);
- 211   4              DisP_Photo  (320,80,320+12-1,80+24-1,Dig1224[DataMax1%1000/100],0);
- 212   4              DisP_Photo  (332,80,332+12-1,80+24-1,Dig1224[DataMax1%100/10],0);
- 213   4              DisP_Photo  (344,80,344+12-1,80+24-1,Dig1224[DataMax1%10],0);
- 214   4              //(2.7)×Ô¶¯ÇÐ»»µ½FFT¸ßËÙÄ£Ê½»¹ÓÐÎÊÌâ,ÐèÒªÐÞ¸Ä,ÔÝÊ±²»×ö           
- 215   4              /*Mode = 3 ;    //ÇÐ»»³ÉFFT¸ßËÙÄ£Ê½
- 216   4              TH0    = (65536 - 24576000/2560) /256 ;
- 217   4              TL0    = (65536 - 24576000/2560) %256 ; //¶¨Ê±Æ÷0³õÖµ(1Ãë2560´ÎÖÐ¶Ï0.4ms) 
- 218   4              TR0     = 1 ;T0Count = 0 ; */
- 219   4               }  //end of Mode==2  Mode2¼ÆËãÏÔÊ¾Íê³É
- 220   3           //(3)Èç¹ûÊÇFFT¸ßÆµÄ£Ê½,²ÉÑùÆµÂÊ2.56KHz,½øÐÐ1024µãFFT±ä»»
- 221   3           //×ª»»Íê³ÉºóÆµÂÊ¼ä¸ôµãÊÇ2.5Hz,É¨Ãè°ÑËùÓÐ·ùÖµ³¬¹ýãÐÖµµÄÆµÂÊµãºÍ·ùÖµÏÔÊ¾³öÀ´
- 222   3           if ( Mode ==3 )   { //(3)Èç¹ûÊÇFFT¸ßÆµÄ£Ê½
- 223   4              FFT(  );       //(3.1)²É¼¯½á¹û·ÅÔÚFft_RealÊý×éÖÐ,½øÐÐ1024µãFFT±ä»»
- 224   4              //XBNum = 0 ;
- 225   4              //(3.2)±ä»»Íê³Éºó,ÕûºÏ¸÷ÆµÂÊµãÊµ²¿ºÍÐé²¿,¼ÆËã·ùÖµ,·ùÖµÒ²·ÅÔÚFft_RealÊý×éÖÐ
- 226   4              for ( i= 1 ; i<401 ; i++ ) {
- 227   5                 Fft_Real[i] = sqrt((long int)Fft_Real[i]*Fft_Real[i]+(long int)Fft_Image[i]*Fft_Image[i]);          
- 228   5                 } 
- 229   4              /*for ( i=0 ; i<400 ;i++ ) {   //´®¿ÚÊý¾ÝÊä³ö³ÌÐò,µ÷ÊÔÓÃ
- 230   4                S1Send[0]= i/256 ;
- 231   4                S1Send[1]= i     ;
- 232   4                S1Send[2]= Fft_Real[i]>>8;
- 233   4                S1Send[3]= Fft_Real[i]   ;
- 234   4                S1Send[4]= Fft_Image[i]>>8;
- 235   4                S1Send[5]= Fft_Image[i]   ;         
- 236   4                S1Num = 0 ;SBUF = S1Send[0];
- 237   4                S1SendOver = 0 ;          
- 238   4                while ( S1SendOver == 0 ) {;}
- 239   4                }*/
- 240   4              //(3.3)ÏÔÊ¾×Ö·û´®
-C51 COMPILER V9.54   MAIN                                                                  04/07/2021 23:27:20 PAGE 5   
+ 178   2      //2-----Èç¹ûÓÐ°´¼ü°´ÏÂ----------------------
+ 179   2          if ( KeyFlag ) 
+ 180   2          {
+ 181   3            count++;
+ 182   3            KeyFlag = 0 ;  //Çå³ý±êÖ¾Î»
+ 183   3              KeyNum = READ7279_NUM( );
+ 184   3                GUI_ShowChar(40,20,0x0000,0xFFFF,KeyNum+0x30,16,0);
+ 185   3            
+ 186   3            SEND7279_CMD(0xA4) ;
+ 187   3            Delay1ms();
+ 188   3            SEND7279_CMD_DATA(0x80 , KeyNum/10);
+ 189   3            Delay1ms();
+ 190   3            SEND7279_CMD_DATA(0x81 , KeyNum%10);
+ 191   3            Delay1ms();
+ 192   3            SEND7279_CMD_DATA(0x82 , count/10);
+ 193   3            Delay1ms();
+ 194   3            SEND7279_CMD_DATA(0x83 , count%10);
+ 195   3            //(2.1)Èç¹û¼üÖµÊÇ1 ----Éè¶¨Ä£Ê½Îª1
+ 196   3                if ( KeyNum == 1 ) 
+ 197   3            {
+ 198   4                  Mode = 1 ; //³ÌÐòÇÐ»»µ½Ö±½Ó²âÁ¿Ä£Ê½(²âÁ¿ÕýÏÒ²¨)
+ 199   4              TR0  = 0 ; //ÔÝÍ£¶¨Ê±Æ÷
+ 200   4              ADCS=0;
+ 201   4              AD7323(0X80);
+ 202   4              AD7323(0X30);
+ 203   4              ADCS=1;
+ 204   4              TongDao=0;
+ 205   4              GUI_FillRec(4,39,476,316,WHITE);  //½çÃæÐÞ¸Ä
+ 206   4                  FColor = DARKBLUE ;
+ 207   4              DisP_Photo  (120,40,120+240-1,40+36-1,CeLiang[0],0);  //ÏÔÊ¾"(1)ÕýÏÒ²¨²âÁ¿"
+ 208   4              DisP_Photo  (8,80,8+464-1,80+24-1,PinLv,0);          //ÏÔÊ¾"ÆµÂÊ·å·åÖµÓÐÐ§Öµ"
+ 209   4                  TH0    = (65536 - 33000000/4800) /256 ; //
+ 210   4                  TL0    = (65536 - 33000000/4800) %256 ; //Éè¶¨¶¨Ê±Æ÷0³õÖµ(1Ãë4800´ÎÖÐ¶Ï0.25ms)  
+ 211   4                  TR0     = 1 ; //Æô¶¯¶¨Ê±Æ÷0
+ 212   4              T0Count = 0 ; //¶¨Ê±Æ÷0¼ÆÊýÖµÇåÁã       
+ 213   4                }  //KeyNum == 1
+ 214   3            if ( KeyNum == 2 ) 
+ 215   3            { 
+ 216   4              Mode = 2 ;   //³ÌÐòÇÐ»»µ½FFTµÍÆµÄ£Ê½(²âÁ¿»ù²¨)
+ 217   4              TR0     = 0 ;
+ 218   4              ADCS=0;
+ 219   4              AD7323(0X80);
+ 220   4              AD7323(0X30);
+ 221   4              ADCS=1;
+ 222   4              TongDao=0;
+ 223   4              GUI_FillRec(4,39,476,316,WHITE);  //½çÃæÐÞ¸Ä
+ 224   4              FColor = DARKBLUE ;
+ 225   4              DisP_Photo  (120,40,120+240-1,40+36-1,CeLiang[1],0);  //ÏÔÊ¾"(2)ÈÎÒâ²¨²âÁ¿"
+ 226   4              DisP_Photo  (8,80,8+376-1,80+24-1,JiBo[0],0);        //ÏÔÊ¾"»ù²¨ÆµÂÊ  ·ùÖµ"       
+ 227   4                  TH0    = (65536 - 33000000/512) /256 ;
+ 228   4                  TL0    = (65536 - 33000000/512) %256 ; //¶¨Ê±Æ÷0³õÖµ(1Ãë512´ÎÖÐ¶Ï2ms) 
+ 229   4                  TR0     = 1 ;   //Æô¶¯¶¨Ê±Æ÷0 
+ 230   4              T0Count = 0 ;   //¶¨Ê±Æ÷0¼ÆÊýÖµÇåÁã 
+ 231   4                } //KeyNum == 2
+ 232   3            if ( KeyNum == 3 ) 
+ 233   3            { 
+ 234   4              Mode = 3 ;    //³ÌÐòÇÐ»»µ½FFT¸ßÆµÄ£Ê½(²âÁ¿Ð³²¨)
+ 235   4              TR0     = 0 ;
+ 236   4              ADCS=0;
+ 237   4              AD7323(0X80);
+ 238   4              AD7323(0X30);
+ 239   4              ADCS=1;
+C51 COMPILER V9.54   MAIN                                                                  04/11/2021 15:34:12 PAGE 5   
 
- 241   4              GUI_ShowStr (12,108,16,"fn(Hz)",0);
- 242   4              GUI_ShowStr (12,124,16,"IP(0.1mA)",0);
- 243   4              //(3.4)Éè¶¨³õÊ¼×ø±ê
- 244   4              X =60;Y =108;
- 245   4              //(3.5)É¨ÃèÕû¸öÊý×é,Êä³ö·ùÖµ³¬¹ýãÐÖµ(ÔÝÊ±È¡60)µÄÆµÂÊµãºÍ·ùÖµ           
- 246   4              for ( i=0 ; i<=400 ;i++ ) {
- 247   5                if((i*5/2)%(NumMax/10)<=1)          
- 248   5                if ( Fft_Real[i] > 60 ) { 
- 249   6                   GUI_ShowNum ( X , Y , i*5/2 , 5 , 16);                      //5Î»Êý×ÖÏÔÊ¾ÆµÂÊÖµ
- 250   6                   GUI_ShowNum ( X , Y+16, (u32)Fft_Real[i]*625/128/24*1414/100 , 5 , 16); //5Î»Êý×ÖÏÔÊ¾·ùÖµ
- 251   6                   X = X+40;}   //Ã¿ÏÔÊ¾Ò»µã,ºá×ø±ê¼Ó40
- 252   5              }         
- 253   4              //(3.6)---×Ô¶¯ÇÐ»»µÍËÙFFTÔÝ²»½øÐÐ       
- 254   4              /*Mode = 2 ;    //ÇÐ»»³ÉFFTµÍËÙÄ£Ê½
- 255   4              TH0    = (65536 - 24576000/512) /256 ;
- 256   4              TL0    = (65536 - 24576000/512) %256 ; //¶¨Ê±Æ÷0³õÖµ(1Ãë512´ÎÖÐ¶Ï2ms) 
- 257   4              TR0     = 1 ;T0Count = 0 ;*/
- 258   4               }  //end of Mode==3
- 259   3            }  //end of MesOver==1
- 260   2      //2-----Èç¹ûÓÐ°´¼ü°´ÏÂ----------------------
- 261   2          if ( KeyFlag ) {
- 262   3            KeyFlag = 0 ;  //Çå³ý±êÖ¾Î»
- 263   3            KeyNum = READ7279_NUM( );
- 264   3            GUI_ShowChar(40,20,0x0000,0xFFFF,KeyNum+0x30,16,0);
- 265   3            //(2.1)Èç¹û¼üÖµÊÇ1 ----Éè¶¨Ä£Ê½Îª1
- 266   3            if ( KeyNum == 1 ) {
- 267   4               Mode = 1 ; //³ÌÐòÇÐ»»µ½Ö±½Ó²âÁ¿Ä£Ê½(²âÁ¿ÕýÏÒ²¨)
- 268   4               TR0  = 0 ; //ÔÝÍ£¶¨Ê±Æ÷
- 269   4               ADCS=0;
- 270   4              AD7323(0X80);
- 271   4              AD7323(0X30);
- 272   4              ADCS=1;
- 273   4              TongDao=0;
- 274   4               GUI_FillRec(4,39,476,316,WHITE);  //½çÃæÐÞ¸Ä
- 275   4               FColor = DARKBLUE ;
- 276   4               DisP_Photo  (120,40,120+240-1,40+36-1,CeLiang[0],0); //ÏÔÊ¾"(1)ÕýÏÒ²¨²âÁ¿"
- 277   4               DisP_Photo  (8,80,8+464-1,80+24-1,PinLv,0);          //ÏÔÊ¾"ÆµÂÊ·å·åÖµÓÐÐ§Öµ"
- 278   4               TH0     = (65536 - 24576000/4800) /256 ; //
- 279   4               TL0     = (65536 - 24576000/4800) %256 ; //Éè¶¨¶¨Ê±Æ÷0³õÖµ(1Ãë4800´ÎÖÐ¶Ï0.25ms)  
- 280   4               TR0     = 1 ; //Æô¶¯¶¨Ê±Æ÷0
- 281   4               T0Count = 0 ; //¶¨Ê±Æ÷0¼ÆÊýÖµÇåÁã        
- 282   4               }  //KeyNum == 1
- 283   3            if ( KeyNum == 2 ) { 
- 284   4               Mode = 2 ;   //³ÌÐòÇÐ»»µ½FFTµÍÆµÄ£Ê½(²âÁ¿»ù²¨)
- 285   4               TR0     = 0 ;
- 286   4               ADCS=0;
- 287   4              AD7323(0X80);
- 288   4              AD7323(0X30);
- 289   4              ADCS=1;
- 290   4              TongDao=0;
- 291   4               GUI_FillRec(4,39,476,316,WHITE);  //½çÃæÐÞ¸Ä
- 292   4               FColor = DARKBLUE ;
- 293   4               DisP_Photo  (120,40,120+240-1,40+36-1,CeLiang[1],0); //ÏÔÊ¾"(2)ÈÎÒâ²¨²âÁ¿"
- 294   4               DisP_Photo  (8,80,8+376-1,80+24-1,JiBo[0],0);        //ÏÔÊ¾"»ù²¨ÆµÂÊ  ·ùÖµ"        
- 295   4               TH0     = (65536 - 24576000/512) /256 ;
- 296   4               TL0     = (65536 - 24576000/512) %256 ; //¶¨Ê±Æ÷0³õÖµ(1Ãë512´ÎÖÐ¶Ï2ms) 
- 297   4               TR0     = 1 ;   //Æô¶¯¶¨Ê±Æ÷0 
- 298   4               T0Count = 0 ;    //¶¨Ê±Æ÷0¼ÆÊýÖµÇåÁã 
- 299   4               } //KeyNum == 2
- 300   3            if ( KeyNum == 3 ) { 
- 301   4               Mode = 3 ;    //³ÌÐòÇÐ»»µ½FFT¸ßÆµÄ£Ê½(²âÁ¿Ð³²¨)
- 302   4               TR0     = 0 ;
-C51 COMPILER V9.54   MAIN                                                                  04/07/2021 23:27:20 PAGE 6   
+ 240   4              TongDao=0;              
+ 241   4                  TH0    = (65536 - 33000000/2560 )/256 ;
+ 242   4                  TL0    = (65536 - 33000000/2560 )%256 ; //¶¨Ê±Æ÷0³õÖµ(1Ãë2560´ÎÖÐ¶Ï0.4ms) 
+ 243   4                  TR0     = 1 ;
+ 244   4              T0Count = 0 ; 
+ 245   4            } //KeyNum == 3
+ 246   3            // //¼üÂëF1ºÍF2ÆÁÄ»ÏÔÊ¾ÄÚ²¿Êý×é,µ÷ÊÔÓÃ
+ 247   3            // if ( KeyNum == 0xF1 ) {//ÏÔÊ¾FFT½á¹û1
+ 248   3            //  for ( i = 0 ; i<200; i++ ) {
+ 249   3            //    GUI_ShowNum ( i%10*48 ,i/10*16,Fft_Real[i],5,16);}
+ 250   3            //  }//KeyNum == 0xF1
+ 251   3            // if ( KeyNum == 0xF2 ) {//ÏÔÊ¾FFT½á¹û2
+ 252   3            //  for ( i = 0 ; i<200; i++ ) {
+ 253   3            //    GUI_ShowNum ( i%10*48 ,i/10*16,Fft_Image[i],5,16);}
+ 254   3            // } //KeyNum == 0xF2
+ 255   3          } //KeyFlag == 1
+ 256   2        } //while(1)
+ 257   1      }//
+*** WARNING C280 IN LINE 102 OF main.c: 'VPP1': unreferenced local variable
+*** WARNING C280 IN LINE 102 OF main.c: 'vrms1': unreferenced local variable
+ 258          
+ 259          
+ 260          void INTTIMER0 (void) interrupt 1 //¶¨Ê±Æ÷0ÖÐ¶Ï
+ 261          { 
+ 262   1         u8   i ;
+ 263   1         OUT0  = 1 ;   //(1)ÖÐ¶Ï¿ªÊ¼Ê±OUTÖÃ¸ß,½áÊøÊ±ÖÃµÍ,²âÊÔÖÐ¶ÏËùÐèÊ±¼ä,µ÷ÊÔÓÃ
+ 264   1        //(2)---ÀûÓÃSPIÍ¨Ñ¶,¶ÁÈ¡AD½á¹û,²¢ÉèÖÃÏÂ´ÎADµÄ²ÎÊý
+ 265   1      
+ 266   1         ADCS  = 0 ;
+ 267   1         ADRes = AD7323(0x80) ;      
+ 268   1         ADRes = (ADRes*256 + AD7323(0x30))>>1;            //¿ØÖÆ×Ö:Í¨µÀ0¶ÔµØ,Õý³£Ä£Ê½,¶þ½øÖÆ²¹Âë,Í¬Ê±¶Á»ØÍ¨µÀ0
+ 269   1         ADCS = 1 ; 
+ 270   1         //ADRes = AD7323(0x8030);
+ 271   1          //GUI_ShowNum (120,120,ADRes,10,16)
+ 272   1         if ( ADRes > 4095 ) {                          //ÒòÎª0-8191¶ÔÓ¦-10V-+10V,ËùÒÔÒª½øÐÐÊýÖÆµ÷Õû
+ 273   2            ADMul = (long int)(ADRes-4096)*(ADRes-4096)/32; //Í¬Ê±,¼ÆËãAD½á¹ûµÄÆ½·½ºÍ,ÒòÎª¿¼ÂÇµ½Òç³ö,ËùÒÔ³ýÁË32
+ 274   2            ADRes = ADRes - 4096 ; } 
+ 275   1         else {
+ 276   2            ADMul = (long int)(4096-ADRes)*(4096-ADRes)/32 ;
+ 277   2            ADRes = ADRes - 4096 ; }
+ 278   1        //(3)Èç¹ûÊÇÕýÏÒ²¨²âÁ¿
+ 279   1         if ( Mode == 1 ) {   
+ 280   2            AD_Acc = AD_Acc + ADMul; //(3.1)Æ½·½ºÍ¼ÆËã
+ 281   2            if (( ADOld < 16 ) && ( ADRes >= 16 )) { //(3.2)ÅÐ¶ÏÊÇ·ñÒ»¸öÖÜÆÚµ½ÁË
+ 282   3              F_Count ++ ;           //(3.3)Èç¹ûÊÇ,ÖÜÆÚÊý¼ÓÒ»
+ 283   3              if (OneSec)  {         //(3.4)Èç¹ûÒ»ÃëÖÓµ½ÁË
+ 284   4                V_Acc = AD_Acc ; T_Acc = T0Count ; F_Acc = F_Count ; //¼ÇÂ¼½á¹û
+ 285   4                AD_Acc = 0 ;     T0Count = 0 ;     F_Count= 0 ;
+ 286   4                MesOver = 1 ;OneSec = 0 ;  }
+ 287   3              }
+ 288   2            T0Count++;              //(3.5)¶¨Ê±Æ÷0¼ÆÊýÖµ¼ÓÒ»
+ 289   2            if ( T0Count == 4800 ) { OneSec = 1 ; } //(3.6)Èç¹ûµ½4000´ÎÖÐ¶Ï,±íÃ÷Ò»Ãëµ½ÁË
+ 290   2            ADOld = ADRes ;         //(3.7)¼ÇÂ¼µ±Ç°ADÖµ
+ 291   2           }
+ 292   1        //(4)Èç¹ûÊÇMode2ºÍMode3,½øÐÐAD½á¹û·ÅÈëÊý×éÖÐ(LIST_TABÏÂ±ê)
+ 293   1        //   ²ÉÂú1024µã,ÉèÖÃ±êÖ¾Î»,×¼±¸¼ÆËã
+ 294   1        if ( Mode == 2 )  {   //(2)Èç¹ûÊÇFFTµÍÆµ²âÁ¿
+ 295   2            if ( T0Count > 0 ) {
+ 296   3              Fft_Real[LIST_TAB[T0Count-1]] = ADRes ;
+ 297   3              Fft_Image[LIST_TAB[T0Count-1]] = 0 ;}
+ 298   2            T0Count ++ ;
+ 299   2            if (T0Count ==  1025 ) {
+C51 COMPILER V9.54   MAIN                                                                  04/11/2021 15:34:12 PAGE 6   
 
- 303   4                       ADCS=0;
- 304   4              AD7323(0X80);
- 305   4              AD7323(0X30);
- 306   4              ADCS=1;
- 307   4              TongDao=0;              
- 308   4               TH0     = (65536 - 24576000/2560 )/256 ;
- 309   4               TL0     = (65536 - 24576000/2560 )%256 ; //¶¨Ê±Æ÷0³õÖµ(1Ãë2560´ÎÖÐ¶Ï0.4ms) 
- 310   4               TR0     = 1 ;
- 311   4               T0Count = 0 ;  } //KeyNum == 3
- 312   3            //¼üÂëF1ºÍF2ÆÁÄ»ÏÔÊ¾ÄÚ²¿Êý×é,µ÷ÊÔÓÃ
- 313   3            if ( KeyNum == 0xF1 ) {//ÏÔÊ¾FFT½á¹û1
- 314   4              for ( i = 0 ; i<200; i++ ) {
- 315   5                GUI_ShowNum ( i%10*48 ,i/10*16,Fft_Real[i],5,16);}
- 316   4              }//KeyNum == 0xF1
- 317   3            if ( KeyNum == 0xF2 ) {//ÏÔÊ¾FFT½á¹û2
- 318   4              for ( i = 0 ; i<200; i++ ) {
- 319   5                GUI_ShowNum ( i%10*48 ,i/10*16,Fft_Image[i],5,16);}
- 320   4            } //KeyNum == 0xF2
- 321   3          } //KeyFlag == 1
- 322   2        } //while(1)
- 323   1      }//
- 324          
- 325          
- 326          void INTTIMER0 (void) interrupt 1 //¶¨Ê±Æ÷0ÖÐ¶Ï
- 327          { 
- 328   1         u8   i ;
- 329   1         OUT0  = 1 ;   //(1)ÖÐ¶Ï¿ªÊ¼Ê±OUTÖÃ¸ß,½áÊøÊ±ÖÃµÍ,²âÊÔÖÐ¶ÏËùÐèÊ±¼ä,µ÷ÊÔÓÃ
- 330   1        //(2)---ÀûÓÃSPIÍ¨Ñ¶,¶ÁÈ¡AD½á¹û,²¢ÉèÖÃÏÂ´ÎADµÄ²ÎÊý
- 331   1        if (TongDao) {
- 332   2         ADCS  = 0 ;
- 333   2         ADRes = AD7323(0x84) ;      
- 334   2         ADRes = ((ADRes*256 + AD7323(0x30))>>1) -0x2000;            //¿ØÖÆ×Ö:Í¨µÀ0¶ÔµØ,Õý³£Ä£Ê½,¶þ½øÖÆ²¹Âë,Í¬Ê±¶
-             -Á»ØÍ¨µÀ0
- 335   2         //ADRes = ((ADRes*256 + AD7323(0x30))>>1); 
- 336   2         ADCS = 1 ;  
- 337   2        //ADRes = AD7323(0x8430)-0x2000;
- 338   2         //GUI_ShowNum (120,120,ADRes,10,16);   
- 339   2         }
- 340   1        else {
- 341   2         ADCS  = 0 ;
- 342   2         ADRes = AD7323(0x80) ;      
- 343   2         ADRes = (ADRes*256 + AD7323(0x30))>>1;            //¿ØÖÆ×Ö:Í¨µÀ0¶ÔµØ,Õý³£Ä£Ê½,¶þ½øÖÆ²¹Âë,Í¬Ê±¶Á»ØÍ¨µÀ0
- 344   2         ADCS = 1 ; 
- 345   2         //ADRes = AD7323(0x8030);
- 346   2          //GUI_ShowNum (120,120,ADRes,10,16);  
- 347   2          }
- 348   1         if ( ADRes > 4095 ) {                          //ÒòÎª0-8191¶ÔÓ¦-10V-+10V,ËùÒÔÒª½øÐÐÊýÖÆµ÷Õû
- 349   2            ADMul = (long int)(ADRes-4096)*(ADRes-4096)/32; //Í¬Ê±,¼ÆËãAD½á¹ûµÄÆ½·½ºÍ,ÒòÎª¿¼ÂÇµ½Òç³ö,ËùÒÔ³ýÁË32
- 350   2            ADRes = ADRes - 4096 ; } 
- 351   1         else {
- 352   2            ADMul = (long int)(4096-ADRes)*(4096-ADRes)/32 ;
- 353   2            ADRes = ADRes - 4096 ; }
- 354   1        //(3)Èç¹ûÊÇÕýÏÒ²¨²âÁ¿
- 355   1         if ( Mode == 1 ) {   
- 356   2            AD_Acc = AD_Acc + ADMul; //(3.1)Æ½·½ºÍ¼ÆËã
- 357   2            if (( ADOld < 16 ) && ( ADRes >= 16 )) { //(3.2)ÅÐ¶ÏÊÇ·ñÒ»¸öÖÜÆÚµ½ÁË
- 358   3              F_Count ++ ;           //(3.3)Èç¹ûÊÇ,ÖÜÆÚÊý¼ÓÒ»
- 359   3              if (OneSec)  {         //(3.4)Èç¹ûÒ»ÃëÖÓµ½ÁË
- 360   4                V_Acc = AD_Acc ; T_Acc = T0Count ; F_Acc = F_Count ; //¼ÇÂ¼½á¹û
- 361   4                AD_Acc = 0 ;     T0Count = 0 ;     F_Count= 0 ;
- 362   4                MesOver = 1 ;OneSec = 0 ;  }
- 363   3              }
-C51 COMPILER V9.54   MAIN                                                                  04/07/2021 23:27:20 PAGE 7   
+ 300   3              TR0 = 0 ; MesOver = 1 ; T0Count = 0 ; }
+ 301   2            } 
+ 302   1        if ( Mode == 3 )  {   //(3)Èç¹ûÊÇFFT¸ßÆµ²âÁ¿
+ 303   2            if ( T0Count > 0 ) {
+ 304   3              Fft_Real[LIST_TAB[T0Count-1]] = ADRes ;
+ 305   3              Fft_Image[LIST_TAB[T0Count-1]] = 0 ;}
+ 306   2            T0Count ++ ;
+ 307   2            if (T0Count ==  1025 ) {
+ 308   3              TR0 = 0 ; MesOver = 1 ; T0Count = 0 ; }
+ 309   2            }       
+ 310   1          OUT0 = 0 ;
+ 311   1        }
+*** WARNING C280 IN LINE 262 OF main.c: 'i': unreferenced local variable
+ 312            
+ 313          void INTUART1  (void) interrupt 4 //´®¿Ú1ÖÐ¶Ï
+ 314          {
+ 315   1         u8 DAT;
+ 316   1         if (RI) {
+ 317   2           RI = 0 ;
+ 318   2           DAT = SBUF ;
+ 319   2           SBUF = DAT ;
+ 320   2           }
+ 321   1         if (TI) {
+ 322   2           TI = 0 ;
+ 323   2           S1Num++ ;
+ 324   2           if ( S1Num < 6 ) 
+ 325   2              { SBUF = S1Send[S1Num] ;}
+ 326   2           else             
+ 327   2              { S1Num = 0 ; S1SendOver = 1;} 
+ 328   2           }
+ 329   1         }
+ 330          void INT3 ( void )  interrupt 11  //Íâ²¿ÖÐ¶Ï3--°´¼üÖÐ¶Ï
+ 331          {
+ 332   1        KeyFlag = 1 ;
+ 333   1      }
+ 334          void   InterFace(void) //³õÊ¼½çÃæÏÔÊ¾
+ 335          {
+ 336   1         FColor = RED ;
+ 337   1         DisP_Photo  (104,0,104+272-1,0+36-1,TITLE,0);  //ÏÔÊ¾µ¥É«Í¼Ïñ
+ 338   1         FColor = BLACK;
+ 339   1         GUI_Rectangle(0, 36, 479, 319);//(4)»­ËÄ±ßÐÎ
+ 340   1         GUI_Rectangle(2, 38, 477, 317);//
+ 341   1         FColor = DARKBLUE ;
+ 342   1         DisP_Photo  (120,40,120+240-1,40+36-1,CeLiang[2],0); //"Çë°´¼üÑ¡Ôñ¹¦ÄÜ"
+ 343   1         }
+ 344          
+ 345          u8 AD7323(u8 CMD)
+ 346          {  u8  i ;
+ 347   1         u8 k=0x80,DataIn=0 ;
+ 348   1         SCK = 1 ;
+ 349   1         _nop_();_nop_();
+ 350   1         for (i=0 ; i<8 ; i++) {
+ 351   2           DataIn = DataIn <<1;
+ 352   2           if ( CMD & k ) { MOSI = 1 ; }
+ 353   2           else       { MOSI = 0 ; }
+ 354   2           SCK = 0 ;     _nop_();_nop_();_nop_();_nop_();_nop_();_nop_();
+ 355   2           SCK = 1 ;    
+ 356   2           if ( MISO ) { DataIn = DataIn|0x01 ;}
+ 357   2           k = k >>1;
+ 358   2           }
+ 359   1         return (DataIn) ;
+ 360   1         }
+C51 COMPILER V9.54   MAIN                                                                  04/11/2021 15:34:12 PAGE 7   
 
- 364   2            T0Count++;              //(3.5)¶¨Ê±Æ÷0¼ÆÊýÖµ¼ÓÒ»
- 365   2            if ( T0Count == 4800 ) { OneSec = 1 ; } //(3.6)Èç¹ûµ½4000´ÎÖÐ¶Ï,±íÃ÷Ò»Ãëµ½ÁË
- 366   2            ADOld = ADRes ;         //(3.7)¼ÇÂ¼µ±Ç°ADÖµ
- 367   2           }
- 368   1        //(4)Èç¹ûÊÇMode2ºÍMode3,½øÐÐAD½á¹û·ÅÈëÊý×éÖÐ(LIST_TABÏÂ±ê)
- 369   1        //   ²ÉÂú1024µã,ÉèÖÃ±êÖ¾Î»,×¼±¸¼ÆËã
- 370   1        if ( Mode == 2 )  {   //(2)Èç¹ûÊÇFFTµÍÆµ²âÁ¿
- 371   2            if ( T0Count > 0 ) {
- 372   3              Fft_Real[LIST_TAB[T0Count-1]] = ADRes ;
- 373   3              Fft_Image[LIST_TAB[T0Count-1]] = 0 ;}
- 374   2            T0Count ++ ;
- 375   2            if (T0Count ==  1025 ) {
- 376   3              TR0 = 0 ; MesOver = 1 ; T0Count = 0 ; }
- 377   2            } 
- 378   1        if ( Mode == 3 )  {   //(3)Èç¹ûÊÇFFT¸ßÆµ²âÁ¿
- 379   2            if ( T0Count > 0 ) {
- 380   3              Fft_Real[LIST_TAB[T0Count-1]] = ADRes ;
- 381   3              Fft_Image[LIST_TAB[T0Count-1]] = 0 ;}
- 382   2            T0Count ++ ;
- 383   2            if (T0Count ==  1025 ) {
- 384   3              TR0 = 0 ; MesOver = 1 ; T0Count = 0 ; }
- 385   2            }       
- 386   1          OUT0 = 0 ;
- 387   1        }
-*** WARNING C280 IN LINE 328 OF main.c: 'i': unreferenced local variable
- 388            
- 389          void INTUART1  (void) interrupt 4 //´®¿Ú1ÖÐ¶Ï
- 390          {
- 391   1         u8 DAT;
- 392   1         if (RI) {
- 393   2           RI = 0 ;
- 394   2           DAT = SBUF ;
- 395   2           SBUF = DAT ;
- 396   2           }
- 397   1         if (TI) {
- 398   2           TI = 0 ;
- 399   2           S1Num++ ;
- 400   2           if ( S1Num < 6 ) 
- 401   2              { SBUF = S1Send[S1Num] ;}
- 402   2           else             
- 403   2              { S1Num = 0 ; S1SendOver = 1;} 
- 404   2           }
- 405   1         }
- 406          void INT3 ( void )  interrupt 11  //Íâ²¿ÖÐ¶Ï3--°´¼üÖÐ¶Ï
- 407          {
- 408   1        KeyFlag = 1 ;
- 409   1        }
- 410          void   InterFace(void) //³õÊ¼½çÃæÏÔÊ¾
- 411          {
- 412   1         FColor = RED ;
- 413   1         DisP_Photo  (104,0,104+272-1,0+36-1,TITLE,0);  //ÏÔÊ¾µ¥É«Í¼Ïñ
- 414   1         FColor = BLACK;
- 415   1         GUI_Rectangle(0, 36, 479, 319);//(4)»­ËÄ±ßÐÎ
- 416   1         GUI_Rectangle(2, 38, 477, 317);//
- 417   1         FColor = DARKBLUE ;
- 418   1         DisP_Photo  (120,40,120+240-1,40+36-1,CeLiang[2],0); //"Çë°´¼üÑ¡Ôñ¹¦ÄÜ"
- 419   1         }
- 420          
- 421          u8 AD7323(u8 CMD)
- 422          {  u8  i ;
- 423   1         u8 k=0x80,DataIn=0 ;
- 424   1         SCK = 1 ;
-C51 COMPILER V9.54   MAIN                                                                  04/07/2021 23:27:20 PAGE 8   
-
- 425   1         _nop_();_nop_();
- 426   1         for (i=0 ; i<8 ; i++) {
- 427   2           DataIn = DataIn <<1;
- 428   2           if ( CMD & k ) { MOSI = 1 ; }
- 429   2           else       { MOSI = 0 ; }
- 430   2           SCK = 0 ;     _nop_();_nop_();_nop_();_nop_();_nop_();_nop_();
- 431   2           SCK = 1 ;    
- 432   2           if ( MISO ) { DataIn = DataIn|0x01 ;}
- 433   2           k = k >>1;
- 434   2           }
- 435   1         return (DataIn) ;
- 436   1         }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   6859    ----
-   CONSTANT SIZE    =   8528    ----
-   XDATA SIZE       =    152      13
+   CODE SIZE        =   2960    ----
+   CONSTANT SIZE    =   8508    ----
+   XDATA SIZE       =    154      13
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
@@ -473,4 +397,4 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
 END OF MODULE INFORMATION.
 
 
-C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  4 WARNING(S),  0 ERROR(S)

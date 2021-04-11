@@ -1,10 +1,10 @@
-C51 COMPILER V9.54   LCD_ALI                                                               04/07/2021 23:27:20 PAGE 1   
+C51 COMPILER V9.54   LCD_ALI                                                               04/11/2021 15:34:12 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE LCD_ALI
 OBJECT MODULE PLACED IN LCD_ALI.OBJ
-COMPILER INVOKED BY: F:\keil\C51\BIN\C51.EXE LCD_ALI.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\应用) DEBUG OBJECTEXTEND 
-                    -TABS(2)
+COMPILER INVOKED BY: D:\keil5\C51\BIN\C51.EXE LCD_ALI.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\应用) DEBUG OBJECTEXTEND
+                    - TABS(2)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   43   1      } 
   44          //--------------------------------------------------------------//
   45          //函数:LCD_WDR     功能:写入16位数据
-C51 COMPILER V9.54   LCD_ALI                                                               04/07/2021 23:27:20 PAGE 2   
+C51 COMPILER V9.54   LCD_ALI                                                               04/11/2021 15:34:12 PAGE 2   
 
   46          //输入:Data数据值  返回值:  无
   47          //--------------------------------------------------------------//
@@ -126,7 +126,7 @@ line level    source
  105   1      } 
  106          //--------------------------------------------------------------//
  107          //函数名：  LCD_SetParam
-C51 COMPILER V9.54   LCD_ALI                                                               04/07/2021 23:27:20 PAGE 3   
+C51 COMPILER V9.54   LCD_ALI                                                               04/11/2021 15:34:12 PAGE 3   
 
  108          //功能：    设置LCD参数，方便进行横竖屏模式切换
  109          //--------------------------------------------------------------//
@@ -190,7 +190,7 @@ line level    source
  167   1      //08 08 08
  168   1        LCD_WIR(0x00F2);  LCD_WDR(0x003b);  LCD_WDR(0x0030);  LCD_WDR(0x0003);
  169   1        LCD_WDR(0x0008);  LCD_WDR(0x0008);  LCD_WDR(0x0008);  LCD_WDR(0x0008);
-C51 COMPILER V9.54   LCD_ALI                                                               04/07/2021 23:27:20 PAGE 4   
+C51 COMPILER V9.54   LCD_ALI                                                               04/11/2021 15:34:12 PAGE 4   
 
  170   1        LCD_WDR(0x0000);  LCD_WDR(0x0008);  LCD_WDR(0x0008);  LCD_WDR(0x0000);
  171   1        LCD_WDR(0x0000);  LCD_WDR(0x0000);  LCD_WDR(0x0000);  LCD_WDR(0x0030);
@@ -254,7 +254,7 @@ line level    source
                 LCD_WIR(0x36);
                 LCD_WDR(0x48);  
               #endif 
-C51 COMPILER V9.54   LCD_ALI                                                               04/07/2021 23:27:20 PAGE 5   
+C51 COMPILER V9.54   LCD_ALI                                                               04/11/2021 15:34:12 PAGE 5   
 
  232   1      //  LCD_BL=1;//点亮背光  
  233   1      }
@@ -318,7 +318,7 @@ line level    source
  291   1         else
  292   1            if (delta_x==0)
  293   1               incx=0;//垂直线 
-C51 COMPILER V9.54   LCD_ALI                                                               04/07/2021 23:27:20 PAGE 6   
+C51 COMPILER V9.54   LCD_ALI                                                               04/11/2021 15:34:12 PAGE 6   
 
  294   1           else {
  295   2               incx=-1;delta_x=-delta_x;} 
@@ -382,7 +382,7 @@ line level    source
  353   1         GUI_DrawPoint(xc + x, yc - y, Color);
  354   1         GUI_DrawPoint(xc - x, yc - y, Color);
  355   1         GUI_DrawPoint(xc + y, yc + x, Color);
-C51 COMPILER V9.54   LCD_ALI                                                               04/07/2021 23:27:20 PAGE 7   
+C51 COMPILER V9.54   LCD_ALI                                                               04/11/2021 15:34:12 PAGE 7   
 
  356   1         GUI_DrawPoint(xc - y, yc + x, Color);
  357   1         GUI_DrawPoint(xc + y, yc - x, Color);
@@ -446,7 +446,7 @@ line level    source
  411          {   //要求X1<X2 , Y1 < Y2;
  412   1          unsigned char    j,k,LCDDATA;
  413   1          unsigned int   Capacity,i;
-C51 COMPILER V9.54   LCD_ALI                                                               04/07/2021 23:27:20 PAGE 8   
+C51 COMPILER V9.54   LCD_ALI                                                               04/11/2021 15:34:12 PAGE 8   
 
  414   1          
  415   1          LCD_SetWindows( X1, Y1, X2, Y2)  ;
@@ -510,7 +510,7 @@ line level    source
  465   2          size-=34;
  466   2          pt=(p+i)->Msk;
  467   2          DisP_Photo(x+17*i,y,x+17*i+16-1,y+16-1,pt,INVERT);
-C51 COMPILER V9.54   LCD_ALI                                                               04/07/2021 23:27:20 PAGE 9   
+C51 COMPILER V9.54   LCD_ALI                                                               04/11/2021 15:34:12 PAGE 9   
 
  468   2          i++;
  469   2        }   
@@ -574,7 +574,7 @@ line level    source
  527   2            p++;}  
  528   1      } 
  529          //--------------------------------------------------------------//
-C51 COMPILER V9.54   LCD_ALI                                                               04/07/2021 23:27:20 PAGE 10  
+C51 COMPILER V9.54   LCD_ALI                                                               04/11/2021 15:34:12 PAGE 10  
 
  530          //内部函数:求幂
  531          //--------------------------------------------------------------//
@@ -638,7 +638,7 @@ line level    source
  589   1         u8      FontB ;
  590   1         LCD_SetWindows( X,Y,X+23,Y+23 ) ; //(1)设置显示区域
  591   1         for ( i = 0 ; i<72 ; i++ ) {      //(2)总共72字节
-C51 COMPILER V9.54   LCD_ALI                                                               04/07/2021 23:27:20 PAGE 11  
+C51 COMPILER V9.54   LCD_ALI                                                               04/11/2021 15:34:12 PAGE 11  
 
  592   2            FontB = *Str ; Str ++ ;
  593   2            for ( j = 0 ; j < 8 ; j++ ) {  //(3)8个点

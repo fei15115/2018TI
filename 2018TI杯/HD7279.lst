@@ -1,10 +1,10 @@
-C51 COMPILER V9.54   HD7279                                                                04/07/2021 23:27:20 PAGE 1   
+C51 COMPILER V9.54   HD7279                                                                04/11/2021 15:34:12 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE HD7279
 OBJECT MODULE PLACED IN HD7279.obj
-COMPILER INVOKED BY: F:\keil\C51\BIN\C51.EXE 应用\HD7279.C LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\应用) DEBUG OBJECTEXT
-                    -END PRINT(.\HD7279.lst) TABS(2) OBJECT(HD7279.obj)
+COMPILER INVOKED BY: D:\keil5\C51\BIN\C51.EXE 应用\HD7279.C LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\应用) DEBUG OBJECTEX
+                    -TEND PRINT(.\HD7279.lst) TABS(2) OBJECT(HD7279.obj)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   52   2          DELAY7279  (SYSTEM_OSC/1200000)   ; //短延时
   53   2          CLK        = 0 ;        //CLK拉低
   54   2          DELAY7279  (SYSTEM_OSC/1200000)   ; //短延时
-C51 COMPILER V9.54   HD7279                                                                04/07/2021 23:27:20 PAGE 2   
+C51 COMPILER V9.54   HD7279                                                                04/11/2021 15:34:12 PAGE 2   
 
   55   2          DATAOUT    = DATAOUT*2 ;}   //待发送字节左移一位     
   56   1         DAT   = 0 ;            //DAT线拉低（？？）
@@ -126,7 +126,7 @@ line level    source
  114          //---------------------------------------------------------
  115          u8       READ7279_KEY   (void)     //从HD7279读取按键键码
  116          {
-C51 COMPILER V9.54   HD7279                                                                04/07/2021 23:27:20 PAGE 3   
+C51 COMPILER V9.54   HD7279                                                                04/11/2021 15:34:12 PAGE 3   
 
  117   1         u8     KEYNUM ;
  118   1      

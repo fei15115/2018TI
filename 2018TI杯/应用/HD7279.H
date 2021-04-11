@@ -26,9 +26,23 @@
 #define       s16       signed int		    //
 #define       s32       signed long int     //
 //1.1--------最小系统参数设定--------------------
-#define       SYSTEM_OSC     24000000  //定义系统时钟
+#define       SYSTEM_OSC     33000000  //定义系统时钟
 #define       Bond           38400     //定义串口波特率
 
+#define       CMD_RESET      0xa4
+#define       CMD_TEST       0xbf
+#define       DECODE0        0x80
+#define       DECODE1        0xc8
+#define       CMD_READ       0x15
+#define       UNDECODE       0x90
+#define       RTL_CYCLE      0xa3
+#define       RTR_CYCLE      0xa2
+#define       RTL_UNCYL      0xa1
+#define       RTR_UNCYL      0xa0
+#define       ACTCTL         0x98
+#define       SEGON          0xe0
+#define       SEGOFF         0xc0
+#define       BLINKCTL       0x88
 //***********************************************
 //            二/端口定义
 //***********************************************
